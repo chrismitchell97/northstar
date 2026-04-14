@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>North Star Partners — Engagement Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #071222;
+    --cream: #F7F0F0;
+    --teal: #18A999;
+    --navy-60: rgba(7, 18, 34, 0.6);
+    --navy-15: rgba(7, 18, 34, 0.15);
+    --navy-08: rgba(7, 18, 34, 0.08);
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  body {
+    background: var(--cream);
+    color: var(--navy);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 780px;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.1s forwards;
+  }
+
+  .header-eyebrow {
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--navy-60);
+    margin-bottom: 0.6rem;
+  }
+
+  .header-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+  }
+
+  .header-title em {
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  /* Progress */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.25s forwards;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 1px;
+    background: var(--navy-15);
+    position: relative;
+    overflow: visible;
+  }
+
+  .progress-fill {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    background: var(--navy);
+    width: 0%;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: left;
+  }
+
+  .progress-ticks {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+  }
+
+  .progress-tick {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    border: 1px solid var(--navy-15);
+    background: var(--cream);
+    transition: all 0.4s ease;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+  }
+
+  .progress-tick.reached {
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .progress-counter {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--navy-60);
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* Slider */
+  .slider-outer {
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .slider::-webkit-scrollbar { display: none; }
+  .slider.grabbing { cursor: grabbing; }
+
+  .slide {
+    min-width: 100%;
+    scroll-snap-align: start;
+    padding: 2.5rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slide-step {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--navy-60);
+    margin-bottom: 1.25rem;
+  }
+
+  .slide-title {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 300;
+    line-height: 1.25;
+    color: var(--navy);
+    margin-bottom: 1.25rem;
+    max-width: 520px;
+    letter-spacing: -0.01em;
+  }
+
+  .slide-title em {
+    font-style: italic;
+  }
+
+  .slide-divider {
+    width: 28px;
+    height: 1px;
+    background: var(--navy);
+    opacity: 0.2;
+    margin-bottom: 1.25rem;
+  }
+
+  .slide-body {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--navy-60);
+    line-height: 1.8;
+    max-width: 560px;
+  }
+
+  /* Controls */
+  .controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--navy-08);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.55s forwards;
+  }
+
+  .dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--navy-15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .dot.active {
+    background: var(--navy);
+    transform: scale(1.8);
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 6px;
+  }
+
+  .btn {
+    background: none;
+    border: 1px solid var(--navy-15);
+    border-radius: 4px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--navy);
+    font-size: 14px;
+    transition: all 0.2s ease;
+    font-family: var(--font-body);
+  }
+
+  .btn:hover:not(:disabled) {
+    border-color: var(--navy-60);
+    background: var(--navy-08);
+  }
+
+  .btn:disabled { opacity: 0.2; cursor: default; }
+
+  /* Advisory band */
+  .advisory {
+    margin-top: 1.75rem;
+    border: 1px solid var(--navy-08);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 1.25rem;
+    align-items: start;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.7s forwards;
+  }
+
+  .advisory::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--navy) 30%, var(--navy) 70%, transparent 100%);
+    opacity: 0.12;
+  }
+
+  .advisory-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--navy-60);
+    padding-top: 2px;
+    white-space: nowrap;
+  }
+
+  .advisory-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .advisory-line {
+    height: 1px;
+    background: var(--navy-08);
+    position: relative;
+    overflow: hidden;
+    border-radius: 1px;
+  }
+
+  .advisory-shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(7,18,34,0.25), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  .advisory-text {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--navy-60);
+    line-height: 1.65;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    60%, 100% { left: 150%; }
+  }
+
+  /* Slide enter animation */
+  .slide-entering .slide-step,
+  .slide-entering .slide-title,
+  .slide-entering .slide-divider,
+  .slide-entering .slide-body {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: fadeUp 0.45s ease forwards;
+  }
+  .slide-entering .slide-title { animation-delay: 0.05s; }
+  .slide-entering .slide-divider { animation-delay: 0.1s; }
+  .slide-entering .slide-body { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">How we work</div>
+    <h2 class="header-title">A structured engagement,<br><em>built around your fund.</em></h2>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill"></div>
+      <div class="progress-ticks" id="prog-ticks"></div>
+    </div>
+    <span class="progress-counter" id="prog-counter">1 / 4</span>
+  </div>
+
+  <div class="slider-outer">
+    <div class="slider" id="slider">
+
+      <div class="slide">
+        <span class="slide-step">01 — Initial discussion</span>
+        <h3 class="slide-title">We learn what you need<br><em>before we price anything.</em></h3>
+        <div class="slide-divider"></div>
+        <p class="slide-body">We take time to understand your portfolio, LP reporting cycle, and any prior valuation work. From there we agree an engagement structure tailored to your fund — no standard packages imposed from the outset.</p>
+      </div>
+
+      <div class="slide">
+        <span class="slide-step">02 — Onboarding</span>
+        <h3 class="slide-title">The framework is built<br><em>before the first deadline.</em></h3>
+        <div class="slide-divider"></div>
+        <p class="slide-body">Detailed review of each investment — credit agreements, IC memos, and supporting documentation. We establish our baseline valuation framework for each position so that quarterly work is rigorous and efficient from day one.</p>
+      </div>
+
+      <div class="slide">
+        <span class="slide-step">03 — Quarterly valuation</span>
+        <h3 class="slide-title">Consistent, defensible valuations<br><em>every quarter.</em></h3>
+        <div class="slide-divider"></div>
+        <p class="slide-body">We review portfolio developments and deliver valuation reports for each investment. Every assumption is documented and built to withstand auditor scrutiny — without last-minute revisions or ambiguous methodology.</p>
+      </div>
+
+      <div class="slide">
+        <span class="slide-step">04 — Annual valuation report</span>
+        <h3 class="slide-title">Comprehensive coverage<br><em>when it matters most.</em></h3>
+        <div class="slide-divider"></div>
+        <p class="slide-body">A full audit-ready report covering detailed analysis and careful treatment of judgemental areas. Structured to satisfy LP requirements and support a clean sign-off — including direct auditor liaison where required.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="controls-row">
+    <div class="dots" id="dots"></div>
+    <div class="btn-group">
+      <button class="btn" id="prev">&#8592;</button>
+      <button class="btn" id="next">&#8594;</button>
+    </div>
+  </div>
+
+  <div class="advisory">
+    <span class="advisory-label">Ongoing<br>advisory</span>
+    <div class="advisory-content">
+      <div class="advisory-line"><div class="advisory-shimmer"></div></div>
+      <p class="advisory-text">Ad-hoc guidance on valuation methodology, accounting treatment, and transaction-related questions — available throughout the engagement.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const slider = document.getElementById('slider');
+  const progFill = document.getElementById('prog-fill');
+  const progTicks = document.getElementById('prog-ticks');
+  const progCounter = document.getElementById('prog-counter');
+  const dotsEl = document.getElementById('dots');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const slides = slider.querySelectorAll('.slide');
+  const total = slides.length;
+  let cur = 0;
+
+  // Build ticks and dots
+  for (let i = 0; i < total; i++) {
+    const tick = document.createElement('div');
+    tick.className = 'progress-tick';
+    tick.onclick = () => go(i);
+    progTicks.appendChild(tick);
+
+    const dot = document.createElement('div');
+    dot.className = 'ns-dot dot';
+    dot.onclick = () => go(i);
+    dotsEl.appendChild(dot);
+  }
+
+  function go(i) {
+    const prev = cur;
+    cur = Math.max(0, Math.min(i, total - 1));
+    slider.scrollTo({ left: cur * slider.offsetWidth, behavior: 'smooth' });
+
+    const pct = total === 1 ? 100 : (cur / (total - 1)) * 100;
+    progFill.style.width = pct + '%';
+
+    progTicks.querySelectorAll('.progress-tick').forEach((t, j) => t.classList.toggle('reached', j <= cur));
+    dotsEl.querySelectorAll('.dot').forEach((d, j) => d.classList.toggle('active', j === cur));
+    progCounter.textContent = (cur + 1) + ' / ' + total;
+    prevBtn.disabled = cur === 0;
+    nextBtn.disabled = cur === total - 1;
+
+    if (cur !== prev) {
+      const activeSlide = slides[cur];
+      activeSlide.classList.remove('slide-entering');
+      void activeSlide.offsetWidth;
+      activeSlide.classList.add('slide-entering');
+    }
+  }
+
+  prevBtn.onclick = () => go(cur - 1);
+  nextBtn.onclick = () => go(cur + 1);
+
+  let down = false, sx = 0, ss = 0;
+  slider.addEventListener('mousedown', e => { down = true; sx = e.pageX; ss = slider.scrollLeft; slider.classList.add('grabbing'); });
+  slider.addEventListener('mousemove', e => { if (down) slider.scrollLeft = ss - (e.pageX - sx); });
+  const release = () => { down = false; slider.classList.remove('grabbing'); snap(); };
+  slider.addEventListener('mouseup', release);
+  slider.addEventListener('mouseleave', release);
+  slider.addEventListener('touchend', snap);
+  slider.addEventListener('scroll', () => { const i = Math.round(slider.scrollLeft / slider.offsetWidth); if (i !== cur) go(i); }, { passive: true });
+  function snap() { go(Math.round(slider.scrollLeft / slider.offsetWidth)); }
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') go(cur + 1);
+    if (e.key === 'ArrowLeft') go(cur - 1);
+  });
+
+  go(0);
+</script>
+</body>
+</html>
